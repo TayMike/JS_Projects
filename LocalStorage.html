@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula EAD 1</title>
+</head>
+<body onload="ativarPrompt()">
+    <button id="prompt">Ativar Prompt</button>
+    <script>
+        let botaoAtivarPrompt = document.querySelector("#prompt");
+        botaoAtivarPrompt.addEventListener("click", ativarPrompt);
+
+        function imprimirLocalStorage() {
+            console.log("----Itens Registrados----")
+            if (localStorage.length > 0) {
+                for (let i = 0; i < localStorage.length; i++) {
+                    console.log(localStorage.key(i));
+                }
+            } else {
+                console.log("Nenhum valor registrado!")
+            }
+        }
+
+        function apagarLocalStorage() {
+            let x = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                x.push(localStorage.key(i)); 
+            }
+            x.forEach(apagarDefinitivamente);
+        }
+
+        function apagarDefinitivamente(value) {
+            localStorage.removeItem(value) 
+        }
+
+        function ativarPrompt() {
+            if (typeof(Storage) === "undefined") {
+                window.alert("Não pode usar LocalStorage nesse navegador, por favor, use outro navegador!");
+            } else {
+                let palavra = prompt("Digite Alguma Informação:");
+                while (palavra != "" && palavra != null) {
+                    if (palavra === "clear") {
+                        apagarLocalStorage();
+                        imprimirLocalStorage();
+                    } else {
+                        if (!localStorage.getItem(palavra)) {
+                            localStorage.setItem(palavra, palavra);
+                            imprimirLocalStorage();
+                        } else {
+                            localStorage.removeItem(palavra);
+                            imprimirLocalStorage();
+                        }
+                    }
+                    palavra = prompt("Digite Alguma Informação:");
+                }
+                imprimirLocalStorage();
+            }
+        }
+    </script>
+</body>
+</html>
