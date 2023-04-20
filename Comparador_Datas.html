@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador Datas</title>
+</head>
+<body>
+    <p>Momento 1</p>
+    <input class="data1" type="date">
+    <input class="hora1" type="time">
+    <p>Momento 2</p>
+    <input class="data2" type="date">
+    <input class="hora2" type="time">
+    <p><button id="ativarFuncao">Calcular Duração</button></p>
+    <p><textarea name="respostaFuncao" id="resposta" cols="30" rows="10"></textarea></p>
+
+    <script>
+        let botaoAtivarCalculo = document.querySelector("#ativarFuncao");
+        botaoAtivarCalculo.addEventListener("click", compararDatas);
+
+        function compararDatas() {
+
+            // Comparar Datas
+            var valorData1 = document.querySelector(".data1");
+            var valorData2 = document.querySelector(".data2");
+            var valorHora1 = document.querySelector(".hora1");
+            var valorHora2 = document.querySelector(".hora2");
+            var area = document.querySelector("#resposta");
+            if (isNaN(valorData1.valueAsNumber) || isNaN(valorData2.valueAsNumber) || isNaN(valorHora1.valueAsNumber) || isNaN(valorHora2.valueAsNumber)) {
+                // Colocar Texto no Site
+                area.value = "Colocar datas e horas válidas!";
+            } else {
+                if (valorData1.valueAsNumber > valorData2.valueAsNumber) {
+                    var data = formatarData(valorData1.valueAsNumber, valorData2.valueAsNumber);
+                    var tempo = horasProcurar(valorHora1.valueAsNumber, valorHora2.valueAsNumber)
+                } else {
+                    if (valorData1.valueAsNumber < valorData2.valueAsNumber) {
+                        var data = formatarData(valorData2.valueAsNumber, valorData1.valueAsNumber);
+                        var tempo = horasProcurar(valorHora2.valueAsNumber, valorHora1.valueAsNumber)
+                    } else {
+                        var data = [0, 0, 0];
+                    }
+                }
+
+                // Formatar Dia e Mês caso o tempo da menor data seja maior que o tempo da maior data
+                if (tempo[2] === true) {
+                    formatarDataTempo(data, tempo);
+                }
+                // Colocar Texto no Site
+                area.value = data[0] + " anos, " + data[1] + " meses, " + data[2] + " dias, " + tempo[0] + " horas e " + tempo[1] + " minutos";
+            }
+        }
+
+        function formatarData(maiorValor, menorValor) {
+            let compararData = maiorValor - menorValor;
+            let dataFormatada = compararData/(1000*60*60*24);
+            let anos = Math.floor(dataFormatada/365);
+            let meses = Math.floor((dataFormatada-(anos*365))/30);
+            let dias = Math.floor(dataFormatada-(anos*365)-(meses*30));
+            return [anos, meses, dias];
+        }
+
+        function formatarTempo(maiorValor, menorValor) {
+            let compararTempo = maiorValor - menorValor;
+            let tempoFormatada = compararTempo/1000;
+            let horas = Math.floor(tempoFormatada/(60*60));
+            let minutos = Math.floor(tempoFormatada/60-horas*60);
+            return [horas, minutos];
+        }
+
+        function horasProcurar(Valor1, Valor2) {
+            // Comparar Horas
+            if (Valor1 > Valor2) {
+                var tempo = formatarTempo(Valor1, Valor2);
+                return tempo.concat([false]);
+            } else {
+                if (Valor1 < Valor2) {
+                    var tempo = formatarTempo(Valor2, Valor1);
+                    return tempo.concat([true]);
+                } else {
+                    var tempo = [0, 0];
+                    return tempo.concat([false]);
+                }
+            }
+        }
+        
+        function formatarDataTempo(data, tempo) {
+            // Verifico se o dia é maior que 0, pois se não for terei que mudar o mês também
+            if (data[2] > 0) {
+                // Diminuir um dia por conta do horário menor que 24 horas
+                data[2] = data[2] - 1;
+            } else {
+                // Diminuir um mês, conferir o mês também para não ficar negativo, se ficar terá que diminuir 1 ano
+                if (data[1] - 1 === -1) {
+                    // Diminuir um ano
+                    data[0] = data[0] - 1;
+                    // Diminuir um mês
+                    data[1] = 12;
+                    // Diminuir o dia para 4 para dar 364 dias mais a hora
+                    data[2] = 4
+                } else {
+                    data[1] = data[1] - 1;
+                    data[2] = 29
+                }
+            }
+            // Subtrair 24 horas e 60 minutos com a hora e o minuto atual 
+            tempo[0] = 23 - tempo[0];
+            if (tempo[0] === 24) {
+                tempo[0] = 0;
+            }
+            tempo[1] = 60 - tempo[1];
+            if (tempo[1] === 60) {
+                tempo[1] = 0;
+            }
+        }
+
+    </script>
+
+</body>
+</html>
