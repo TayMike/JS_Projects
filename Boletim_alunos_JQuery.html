@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim de alunos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        header {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 class="title mt-4 mb-4">Alunos IFSP</h1>
+    </header>
+
+    <div class="columns">
+        <div class="column is-8 is-offset-2">
+            <div class="field"><label class="label">Nome</label>
+                <div class="control">
+                    <input type="text" placeholder="Digite o nome do aluno" class="input" name="nome">
+                </div>
+            </div>
+            <div class="buttons is-centered">
+                <button class="button is-primary">Adicionar aluno</button>
+                <button class="button is-danger">Remover pior aluno</button>
+            </div>
+            <table class="table is-striped is-fullwidth is-hoverable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Nota 1</th>
+                        <th>Nota 2</th>
+                        <th>Nota 3</th>
+                        <th>Média</th>
+                        <th>Status</th>
+                        <th>Opções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Leônidas</td>
+                        <td>3</td>
+                        <td>5</td>
+                        <td>2</td>
+                        <td>3.33</td>
+                        <td>Recuperação</td>
+                        <td>
+                            <button class="button is-primary plus">Aumentar nota</button>
+                            <button class="button is-info minus">Diminuir nota</button>
+                            <button class="button is-warning rem">Remover</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Assurbanipal</td>
+                        <td>6</td>
+                        <td>8</td>
+                        <td>8.5</td>
+                        <td>7.5</td>
+                        <td>Aprovado</td>
+                        <td>
+                            <button class="button is-primary plus">Aumentar nota</button>
+                            <button class="button is-info minus">Diminuir nota</button>
+                            <button class="button is-warning rem">Remover</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ramsés</td>
+                        <td>0.5</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>1.83</td>
+                        <td>Reprovado</td>
+                        <td>
+                            <button class="button is-primary plus">Aumentar nota</button>
+                            <button class="button is-info minus">Diminuir nota</button>
+                            <button class="button is-warning rem">Remover</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Edward Teach</td>
+                        <td>5</td>
+                        <td>3</td>
+                        <td>9</td>
+                        <td>5.66</td>
+                        <td>Recuperação</td>
+                        <td>
+                            <button class="button is-primary plus">Aumentar nota</button>
+                            <button class="button is-info minus">Diminuir nota</button>
+                            <button class="button is-warning rem">Remover</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gilgamesh</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>Aprovado</td>
+                        <td>
+                            <button class="button is-primary plus">Aumentar nota</button>
+                            <button class="button is-info minus">Diminuir nota</button>
+                            <button class="button is-warning rem">Remover</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // Gera um número aleatório entre 0.0 e 10.0 com até 1 casa decimal.
+        function geraNota() {
+            let valor = Math.floor(Math.random() * 101);
+            return (valor / 10).toFixed(2);
+        }
+
+        function adicionarAluno(e) {
+            let novoTR = $("<tr>");
+            let novoTD = $("<td>");
+            let nome = $('input[name="nome"]');
+            novoTD.text(nome.val());
+            nome.val("");
+            novoTR.append(novoTD);
+            let totalMedia = 0;
+            let i = 0
+            for(i; i < 3; i++) {
+                let novoTD = $("<td>");
+                novoTD.text(geraNota());
+                totalMedia = totalMedia + Number(novoTD.text());
+                novoTR.append(novoTD);
+            }
+            let mediaFinal = Math.floor(totalMedia/(i) * 100) / 100;
+            let novoTDMedia = $("<td>");
+            novoTDMedia.text(mediaFinal);
+            novoTR.append(novoTDMedia);
+            let novoTDStatus = $("<td>");
+            switch (true) {
+                case (mediaFinal > 6):
+                    novoTDStatus.text("Aprovado");
+                    break;
+                case (mediaFinal >= 5):
+                    novoTDStatus.text("Recuperação");
+                    break;
+                default:
+                    novoTDStatus.text("Reprovado");
+            }
+            novoTR.append(novoTDStatus);
+            let novoTDBotoes = $("<td>");
+            for(i = 0; i < 3; i++) {
+                let novoButton = $("<button>");
+                switch (i) {
+                    case 0:
+                        novoButton.addClass("button");
+                        novoButton.addClass("is-primary");
+                        novoButton.addClass("plus");
+                        novoButton.text("Aumentar nota");
+                        novoButton.click(Nota);
+                        break;
+                    case 1:
+                        novoButton.addClass("button");
+                        novoButton.addClass("is-info");
+                        novoButton.addClass("minus");
+                        novoButton.text("Diminuir nota");
+                        novoButton.click(Nota);
+                        break;
+                    default:
+                        novoButton.addClass("button");
+                        novoButton.addClass("is-warning");
+                        novoButton.addClass("rem");
+                        novoButton.text("Remover");
+                        novoButton.click(removerAlunoSelecionado);
+                }
+                novoTDBotoes.append(novoButton);
+            }
+            novoTR.append(novoTDBotoes);
+            $("tbody").append(novoTR);
+        }
+
+        function removerAluno(e) {
+           let menorMedia = 10;
+           let tr = $("tr");
+           let isNumber = "";
+           if (tr.length > 1) {
+                for (let alunos of tr) {
+                    isNumber = Number($(alunos).children().last().prev().prev().text())
+                    if (!isNaN(isNumber)){
+                        if (isNumber <= Number(menorMedia)) {
+                            piorAluno = alunos;
+                            menorMedia = isNumber;
+                        }
+                    }
+                }
+                piorAluno.remove();
+            }
+        }
+
+        function Nota(e) {
+            if ($(this).hasClass("button is-info minus")) {
+                var aumDim = -0.5;
+            } else {
+                var aumDim = 0.5;
+            }
+            let tr = $(this).first().parent().first().parent().children();
+            let total = tr.length;
+            let totalMedia = 0;
+            let i = 0;
+            while (total > i + 3) {
+                if (i > 0 && !isNaN($(tr[i]).text())) {
+                    $(tr[i]).text((Number($(tr[i]).text()) + aumDim).toFixed(2));
+                    if (Number($(tr[i]).text()) < 0)
+                        $(tr[i]).text(0);
+                    else if (Number($(tr[i]).text()) > 10)
+                        $(tr[i]).text(10);
+                    totalMedia = totalMedia + Number($(tr[i]).text());
+                }
+                i ++;
+            }
+            let mediaFinal = Math.floor(totalMedia/(i-1) * 100) / 100;
+            $(this).first().parent().first().prev().first().prev().text(mediaFinal.toFixed(2));
+            switch (true) {
+                case (mediaFinal > 6):
+                    $(this).first().parent().first().prev().text("Aprovado");
+                    break;
+                case (mediaFinal >= 5):
+                    $(this).first().parent().first().prev().text("Recuperação");
+                    break;
+                default:
+                    $(this).first().parent().first().prev().text("Reprovado");
+            }
+        }
+
+        function removerAlunoSelecionado(e) {
+            $(this).first().parent().first().parent().remove();
+        }
+
+        let botaoAdicionarAluno = $(".button.is-primary").not(".plus");
+        botaoAdicionarAluno.click(adicionarAluno);
+
+        let botaoRemoverAluno = $(".button.is-danger");
+        botaoRemoverAluno.click(removerAluno);
+
+        let botoesAumentarNota = $("td").children(".plus");
+        botoesAumentarNota.click(Nota);
+
+        let botoesDiminuirNota = $("td").children(".minus");
+        botoesDiminuirNota.click(Nota);
+
+        let botaoRemoverAlunoSelecionado = $("button.is-warning.rem");
+        botaoRemoverAlunoSelecionado.click(removerAlunoSelecionado);
+
+    </script>
+
+</body>
+
+</html>
