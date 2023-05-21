@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boletim de alunos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <style>
+    header {
+        text-align: center;
+    }
+    table {
+        border-collapse: separate!important;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1 class="title mt-4 mb-4">Alunos IFSP</h1>
+  </header>
+
+  <div class="columns">
+      <div class="column is-10 is-offset-1">
+          <div class="field"><label class="label">Nome</label>
+              <div class="control">
+                  <input type="text" placeholder="Digite o nome do aluno" class="input" name="nome">
+              </div>
+          </div>
+          <div class="buttons is-centered">
+              <button class="button is-primary">Adicionar aluno</button>
+              <button class="button is-danger">Remover pior aluno</button>
+          </div>
+          <table class="table is-striped is-fullwidth is-hoverable">
+              <thead>
+                  <tr>
+                      <th class="has-text-centered">Nome</th>
+                      <th class="has-text-centered">Nota 1</th>
+                      <th class="has-text-centered">Nota 2</th>
+                      <th class="has-text-centered">Nota 3</th>
+                      <th class="has-text-centered">Média</th>
+                      <th class="has-text-centered">Status</th>
+                      <th class="has-text-centered">Opções</th>
+                  </tr>
+              </thead>
+          </table>
+      </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    function ajax(){
+    $.ajax({
+            type: "GET",
+            dataType: 'jsonp',
+            url: "https://ifsp.ddns.net/webservices/boletim/",
+            async: false,
+            contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            success: function (msg) {
+                console.log(msg);                
+            }
+    });
+    }
+    
+    // Gera um número aleatório entre 0.0 e 10.0 com até 1 casa decimal.
+    function geraNota() {
+        let valor = Math.floor(Math.random() * 101);
+        return (valor / 10).toFixed(2);
+    }
+
+    function adicionarAluno(e) {
+        let dados = {};
+        let nome = $('input[name="nome"]');
+        if(nome.val() != '') {
+            dados["nome"] = nome.val();
+            postServidor(dados);
+            nome.val("");
+        }
+    }
+
+    function removerAluno(e) {
+        let menorMedia = 10;
+        let tr = $("tr");
+        let isNumber = "";
+        let nome = "";
+        if (tr.length > 1) {
+            for (let alunos of tr) {
+                isNumber = Number($(alunos).children().last().prev().prev().text())
+                if (!isNaN(isNumber)){
+                    if (isNumber <= Number(menorMedia)) {
+                        piorAluno = alunos;
+                        menorMedia = isNumber;
+                        nome = $(alunos).children().first().text()
+                    }
+                }
+            }
+            deleteServidor(nome, piorAluno, false);
+        }
+    }
+
+    function Nota(e) {
+        if ($(this).hasClass("button is-info minus")) {
+            var aumDim = -0.5;
+        } else {
+            var aumDim = 0.5;
+        }
+        let nome = $(this).first().parent().first().parent().children().first().text();
+        putServidor(nome, aumDim, $(this).first().parent().first().parent().children());
+    }
+
+    function removerAlunoSelecionado(e) {
+        let nome = $(this).first().parent().first().parent().find(">:first-child").text();
+        deleteServidor(nome, this);
+    }
+
+    let botaoAdicionarAluno = $(".button.is-primary").not(".plus");
+    botaoAdicionarAluno.click(adicionarAluno);
+
+    let botaoRemoverAluno = $(".button.is-danger");
+    botaoRemoverAluno.click(removerAluno);
+
+    let botoesAumentarNota = $("td").children(".plus");
+    botoesAumentarNota.click(Nota);
+
+    let botoesDiminuirNota = $("td").children(".minus");
+    botoesDiminuirNota.click(Nota);
+
+    let botaoRemoverAlunoSelecionado = $("button.is-warning.rem");
+    botaoRemoverAlunoSelecionado.click(removerAlunoSelecionado);
+
+    function corpoAluno(tr, dado, objetos) {
+        for (let info of objetos) {
+            let td = $("<td>");
+            if(!Array.isArray(dado[info])) {
+                if($.isNumeric(dado[info]))
+                    td.text(dado[info].toFixed(2));
+                else
+                    td.text(dado[info]);
+                td.addClass("has-text-centered")
+            } else {
+                let ul = $("<ul>");
+                for (let acessorio of dado[info]) {
+                    let li = $("<li>");
+                    li.text(acessorio);
+                    ul.append(li);
+                }
+                td.append(ul);
+            }
+            tr.append(td);
+        }
+        // Adicionar Botoes na ultima coluna
+        tr.append(criarBotoes);
+    }
+
+    function corpoTabela(dados, objetos){
+        let tbody = $("<tbody>") 
+        for (let dado of dados) {
+            let tr = $("<tr>"); 
+            corpoAluno(tr, dado, objetos);
+            tbody.append(tr);
+        }
+        return tbody
+    }
+
+    function criarBotoes() {
+        let tdButton = $("<td>");
+        for(i = 0; i < 3; i++) {
+            let button = $("<button>");
+            switch (i) {
+                case 0:
+                    button.addClass("button");
+                    button.addClass("is-primary");
+                    button.addClass("plus");
+                    button.text("Aumentar nota");
+                    button.click(Nota);
+                    break;
+                case 1:
+                    button.addClass("button");
+                    button.addClass("is-info");
+                    button.addClass("minus");
+                    button.text("Diminuir nota");
+                    button.click(Nota);
+                    break;
+                default:
+                    button.addClass("button");
+                    button.addClass("is-warning");
+                    button.addClass("rem");
+                    button.text("Remover");
+                    button.click(removerAlunoSelecionado);
+            }
+            tdButton.addClass("buttons");
+            tdButton.addClass("mb-0");
+            tdButton.addClass("is-centered");
+            tdButton.append(button);
+        }
+    return tdButton
+    }
+
+    function limparJSON(objetos){
+        // Retirar os IDs
+        objetos.shift();
+        // Inverter o status com a media
+        let removidoObj = objetos.splice(4, 1);
+        objetos.push(removidoObj);
+        return objetos;
+    }
+
+    function carregarObjetos(dados, limpar = true){
+      let objetos = []
+      if(dados[0] == undefined) {
+        for (let dado in dados){
+          objetos.push(dado)
+        }
+      } else {
+        for (let dado in dados[0]){
+          objetos.push(dado)
+        }
+      }
+      if(limpar)
+        objetos = limparJSON(objetos);
+      return objetos
+    }
+
+    function parametros(dados, metodo, corpo = true){
+        let params = new URLSearchParams();
+        for(let chave in dados) {
+            params.append(chave, dados[chave]);
+        }
+        let query = params.toString();
+        let options = {};
+        if(corpo == true){
+             options = {
+                method: metodo,
+                body: query,
+                headers:  {
+                    "Content-Type" : "application/x-www-form-urlencoded"
+                }
+            }
+        } else {
+            options = {
+                method: metodo,
+                headers:  {
+                    "Content-Type" : "application/x-www-form-urlencoded"
+                }
+            }
+        }
+        return options
+    }
+
+    function encontrarID(dados, nome){
+        objetos = carregarObjetos(dados, false);
+        for(dado of dados){
+            for(objeto of objetos){
+                if(dado[objeto] == nome)
+                    id = dado['id'];
+            }
+        }
+        return id;
+    }
+
+    function atualizarID(id, e){
+        options = parametros(id, "GET", corpo = false);
+        fetch("https://ifsp.ddns.net/webservices/boletim/aluno/" + id, options)
+        .then(resposta => {return resposta.json()})
+        .then(dados => {
+            objetos = carregarObjetos(dados);
+            let i = 0
+            while(i < objetos.length){
+                if(!isNaN(dados[objetos[i]]))
+                    $(e[i]).text(dados[objetos[i]].toFixed(2));
+                else
+                    $(e[i]).text(dados[objetos[i]]);
+                i++
+            }
+        });
+    }
+
+    function putServidor(nome, aumDim, e){
+        fetch("https://ifsp.ddns.net/webservices/boletim/aluno")
+        .then(resposta => {return resposta.json()})
+        .then(dados => {
+            id = encontrarID(dados, nome);
+            if(aumDim == 0.5)
+                op = "plus";
+            else
+                op = "minus";
+            let dadosPut = {op};
+            options = parametros(dadosPut, "PUT");
+            fetch("https://ifsp.ddns.net/webservices/boletim/aluno/" + id, options)
+            .then(function() {atualizarID(id, e)})
+        });
+    }
+
+    function deleteServidor(nome, e, selecionado = true){
+        fetch("https://ifsp.ddns.net/webservices/boletim/aluno")
+        .then(resposta => {return resposta.json()})
+        .then(dados => {
+        id = encontrarID(dados, nome);
+        let dadosDelete = {id};
+        options = parametros(dadosDelete, "DELETE");
+        fetch("https://ifsp.ddns.net/webservices/boletim/aluno/" + id, options);
+        if(selecionado)
+            $(e).first().parent().first().parent().remove();
+        else
+            $(e).remove();
+        });
+    }
+
+    function postServidor(dados){
+        options = parametros(dados, "POST");
+        fetch("https://ifsp.ddns.net/webservices/boletim/aluno", options)
+        .then(resposta => {return resposta.json()})
+        .then(dados => {
+            objetos = carregarObjetos(dados);
+            let tr = $("<tr>");
+            corpoAluno(tr, dados, objetos)
+            $("table").append(tr);
+        })
+    }
+
+    async function atualizarTabela(){
+      resposta = await fetch("https://ifsp.ddns.net/webservices/boletim/aluno")
+      dados = await resposta.json();
+      objetos = carregarObjetos(dados);
+      // Criar TBody
+      $("table").append(corpoTabela(dados, objetos));
+    }
+
+    atualizarTabela();
+  </script>
+</body>
+</html>
