@@ -123,62 +123,64 @@
             let novoTR = document.createElement("tr");
             let novoTD = document.createElement("td");
             let nome = document.querySelector('input[name="nome"]');
-            novoTD.innerText = nome.value;
-            nome.value = "";
-            novoTR.append(novoTD);
-            let totalMedia = 0;
-            let i = 0
-            for(i; i < 3; i++) {
-                let novoTD = document.createElement("td");
-                novoTD.innerText = geraNota();
-                totalMedia = totalMedia + Number(novoTD.innerText);
+            if(nome.value != "") {
+                novoTD.innerText = nome.value;
+                nome.value = "";
                 novoTR.append(novoTD);
-            }
-            let mediaFinal = Math.floor(totalMedia/(i) * 100) / 100;
-            let novoTDMedia = document.createElement("td");
-            novoTDMedia.innerText = mediaFinal;
-            novoTR.append(novoTDMedia);
-            let novoTDStatus = document.createElement("td");
-            switch (true) {
-                case (mediaFinal > 6):
-                    novoTDStatus.innerText = "Aprovado";
-                    break;
-                case (mediaFinal >= 5):
-                    novoTDStatus.innerText = "Recuperação";
-                    break;
-                default:
-                    novoTDStatus.innerText = "Reprovado";
-            }
-            novoTR.append(novoTDStatus);
-            let novoTDBotoes = document.createElement("td");
-            for(i = 0; i < 3; i++) {
-                let novoButton = document.createElement("button");
-                switch (i) {
-                    case 0:
-                        novoButton.classList.add("button")
-                        novoButton.classList.add("is-primary")
-                        novoButton.classList.add("plus")
-                        novoButton.innerText = "Aumentar nota";
-                        novoButton.addEventListener("click", Nota);
+                let totalMedia = 0;
+                let i = 0
+                for(i; i < 3; i++) {
+                    let novoTD = document.createElement("td");
+                    novoTD.innerText = geraNota();
+                    totalMedia = totalMedia + Number(novoTD.innerText);
+                    novoTR.append(novoTD);
+                }
+                let mediaFinal = Math.floor(totalMedia/(i) * 100) / 100;
+                let novoTDMedia = document.createElement("td");
+                novoTDMedia.innerText = mediaFinal;
+                novoTR.append(novoTDMedia);
+                let novoTDStatus = document.createElement("td");
+                switch (true) {
+                    case (mediaFinal > 6):
+                        novoTDStatus.innerText = "Aprovado";
                         break;
-                    case 1:
-                        novoButton.classList.add("button")
-                        novoButton.classList.add("is-info")
-                        novoButton.classList.add("minus")
-                        novoButton.innerText = "Diminuir nota";
-                        novoButton.addEventListener("click", Nota);
+                    case (mediaFinal >= 5):
+                        novoTDStatus.innerText = "Recuperação";
                         break;
                     default:
-                        novoButton.classList.add("button")
-                        novoButton.classList.add("is-warning")
-                        novoButton.classList.add("rem")
-                        novoButton.innerText = "Remover";
-                        novoButton.addEventListener("click", removerAlunoSelecionado);
+                        novoTDStatus.innerText = "Reprovado";
                 }
-                novoTDBotoes.append(novoButton);
+                novoTR.append(novoTDStatus);
+                let novoTDBotoes = document.createElement("td");
+                for(i = 0; i < 3; i++) {
+                    let novoButton = document.createElement("button");
+                    switch (i) {
+                        case 0:
+                            novoButton.classList.add("button")
+                            novoButton.classList.add("is-primary")
+                            novoButton.classList.add("plus")
+                            novoButton.innerText = "Aumentar nota";
+                            novoButton.addEventListener("click", Nota);
+                            break;
+                        case 1:
+                            novoButton.classList.add("button")
+                            novoButton.classList.add("is-info")
+                            novoButton.classList.add("minus")
+                            novoButton.innerText = "Diminuir nota";
+                            novoButton.addEventListener("click", Nota);
+                            break;
+                        default:
+                            novoButton.classList.add("button")
+                            novoButton.classList.add("is-warning")
+                            novoButton.classList.add("rem")
+                            novoButton.innerText = "Remover";
+                            novoButton.addEventListener("click", removerAlunoSelecionado);
+                    }
+                    novoTDBotoes.append(novoButton);
+                }
+                novoTR.append(novoTDBotoes);
+                document.querySelector("tbody").append(novoTR);
             }
-            novoTR.append(novoTDBotoes);
-            document.querySelector("tbody").append(novoTR);
         }
 
         function removerAluno(e) {
