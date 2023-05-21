@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gran Turismo</title>
+</head>
+<body>
+  <script>
+    function cabecalhoTabela(objetos){
+      let thead = document.createElement("thead");
+      let tr = document.createElement("tr");
+      for (let info of objetos) {
+        let td = document.createElement("th");
+        td.innerText = info;
+        tr.append(td);
+      }
+      thead.append(tr);
+      return thead
+    }
+    function corpoTabela(dados, objetos){
+      let tbody = document.createElement("tbody");
+      for (let dado of dados) {
+        let tr = document.createElement("tr");
+        for (let info of objetos) {
+          let td = document.createElement("td");
+          if (!Array.isArray(dado[info])) {
+            td.innerText = dado[info];
+          } else {
+              let ul = document.createElement("ul");
+              for (let acessorio of dado[info]) {
+                let li = document.createElement("li");
+                li.innerText = acessorio;
+                ul.append(li);
+              }
+              td.append(ul);
+            }
+          tr.append(td);
+        }
+        tbody.append(tr);
+      }
+      return tbody
+    }
+
+    fetch("https://ifsp.ddns.net/geral/carros.php")
+      .then(resposta => {
+        if (!resposta.ok) {
+          throw new Error("Houve algum erro");
+        }
+      return resposta.json();
+    })
+    .then(dados => {
+      // Lista de variaveis
+      let objetos = []
+      for (let dado in dados[0]){
+        objetos.push(dado)
+      }
+      // Criar Tabela
+      let tabela = document.createElement("table");
+      tabela.append(cabecalhoTabela(objetos));
+      tabela.append(corpoTabela(dados, objetos));
+      document.querySelector("body").append(tabela);
+    })
+    .catch(erro => {
+        console.error("Erro encontrado:", erro);
+    });
+  </script>
+</body>
+</html>
