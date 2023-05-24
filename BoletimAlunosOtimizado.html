@@ -259,11 +259,7 @@
         return id;
     }
 
-    function atualizarID(id, e){
-        options = parametros(id, "GET", corpo = false);
-        fetch("https://ifsp.ddns.net/webservices/boletim/aluno/" + id, options)
-        .then(resposta => {return resposta.json()})
-        .then(dados => {
+    function atualizarID(dados, e){
             objetos = carregarObjetos(dados);
             let i = 0
             while(i < objetos.length){
@@ -273,8 +269,7 @@
                     $(e[i]).text(dados[objetos[i]]);
                 i++
             }
-        });
-    }
+        }
 
     function putServidor(nome, aumDim, e){
         fetch("https://ifsp.ddns.net/webservices/boletim/aluno")
@@ -288,8 +283,11 @@
             let dadosPut = {op};
             options = parametros(dadosPut, "PUT");
             fetch("https://ifsp.ddns.net/webservices/boletim/aluno/" + id, options)
-            .then(function() {atualizarID(id, e)})
-        });
+            .then(resposta => {return resposta.json()})
+            .then(dados => {
+            atualizarID(dados, e);
+            })
+        })
     }
 
     function deleteServidor(nome, e, selecionado = true){
