@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postinho do IFSP</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> 
+    <style>
+        header {
+            text-align: center;
+        }
+        table {
+            border-collapse: separate!important;
+        }
+        #AddAppointment {
+            color: royalblue
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="#/">
+                        <h1 class="title">Postinho do IFSP</h1>
+                    </a>
+                </div>
+
+                <div class="navbar-menu">
+                    <div class="navbar-start">
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                Pacientes
+                            </a>
+                            <div class="navbar-dropdown">
+                                <a id="PatientListar" class="navbar-item">
+                                    Listar
+                                </a>
+                                <a id="PatientCadastrar" class="navbar-item">
+                                    Cadastrar
+                                </a>
+                            </div>
+                        </div>
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                Médicos
+                            </a>
+                            <div class="navbar-dropdown">
+                                <a id="DoctorListar" class="navbar-item">
+                                    Listar
+                                </a>
+                                <a id="DoctorCadastrar" class="navbar-item">
+                                    Cadastrar
+                                </a>
+                            </div>
+                        </div>
+                        <a id="AddAppointment" class="navbar-item _ngcontent-iwr-c26">
+                            Adicionar Consulta
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <main>
+        </main>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="newIndex.js"></script>
+</body>
+
+</html>
